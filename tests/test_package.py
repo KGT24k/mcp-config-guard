@@ -25,7 +25,7 @@ import config_guard
 class TestPackageMetadata:
     def test_version_set(self):
         assert hasattr(config_guard, "__version__")
-        assert config_guard.__version__ == "1.0.0"
+        assert config_guard.__version__ == "1.1.0"
 
     def test_no_external_dependencies(self):
         """Config Guard must be zero-dependency (stdlib only)."""

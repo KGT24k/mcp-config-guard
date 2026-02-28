@@ -46,7 +46,7 @@ config-guard --sarif > results.sarif
 config-guard --json
 ```
 
-## 16 Security Checks
+## 17 Security Checks
 
 Every check is mapped to the [OWASP MCP Top 10](https://owasp.org/www-project-mcp-top-10/).
 
@@ -64,10 +64,11 @@ Every check is mapped to the [OWASP MCP Top 10](https://owasp.org/www-project-mc
 | 10 | Overbroad filesystem access (`/`, `C:\`) | MEDIUM | MCP-06 |
 | 11 | Environment variable leaks (hardcoded secrets) | MEDIUM | MCP-04 |
 | 12 | Excessive server count (attack surface) | LOW | MCP-10 |
-| 13 | Known CVEs (9 vulnerable packages tracked) | CRITICAL | MCP-09 |
+| 13 | Known CVEs (12 vulnerable packages tracked) | CRITICAL | MCP-09 |
 | 14 | Symlink bypass (CVE-2025-53109) | HIGH | MCP-05 |
 | 15 | Shadow servers (ngrok, cloudflared, `0.0.0.0`) | HIGH | MCP-05 |
 | 16 | Code execution (`eval`/`exec` patterns) | CRITICAL | MCP-01 |
+| 17 | Known malicious packages (confirmed malware) | CRITICAL | MCP-07 |
 
 ## CVE Database
 
@@ -83,6 +84,10 @@ Config Guard tracks known vulnerable MCP packages:
 | `mcp-vegalite-server` | CVE-2026-1977 | Critical |
 | `github-kanban-mcp` | CVE-2026-0756 | High |
 | `godot-mcp` | CVE-2026-25546 | High |
+| `fermat-mcp` | CVE-2026-2008 | Critical |
+| `@anthropic/mcp-inspector` | CVE-2026-23744 | Critical (CVSS 9.8) |
+
+Config Guard also detects **confirmed malicious packages** (e.g., `postmark-mcp`, `@lanyer640/mcp-runcommand-server`) that contain reverse shells or malware payloads.
 
 ## Output Formats
 

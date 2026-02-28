@@ -7,7 +7,7 @@ Catches network exposure, secret leakage, auto-update risks, and dangerous
 shell patterns in .mcp.json before any server starts.
 No API keys. No cloud. No LLM required.
 
-16 security checks (mapped to OWASP MCP Top 10):
+17 security checks (mapped to OWASP MCP Top 10):
  1. Network exposure — non-localhost URLs, 0.0.0.0 binding [MCP-03]
  2. Rug pulls — npx @latest auto-update vectors [MCP-07]
  3. Secret leakage — hardcoded API keys in args/env [MCP-04]
@@ -20,10 +20,11 @@ No API keys. No cloud. No LLM required.
 10. Overbroad access — root/system-level filesystem grants [MCP-06]
 11. Env var leaks — hardcoded secrets in env config [MCP-04]
 12. Excessive servers — attack surface from too many active servers [MCP-10]
-13. Known CVEs — 9 packages tracked (mcp-remote, server-git, filesystem, gemini, vegalite, godot) [MCP-09]
+13. Known CVEs — 12 packages tracked (mcp-remote, server-git, filesystem, gemini, vegalite, godot, fermat, inspector) [MCP-09]
 14. Symlink bypass — CVE-2025-53109 privilege escalation [MCP-05]
 15. Shadow servers — tunnel/public binding detection (ngrok, cloudflared) [MCP-05]
 16. Code execution — eval/exec/execAsync patterns in args (CVE-2026-0755/1977/25546) [MCP-01]
+17. Known malicious — confirmed malware packages (postmark-mcp, etc.) [MCP-07]
 
 Supports: Claude Code, Claude Desktop, Cursor, VS Code, Windsurf configs.
 Output: Human-readable, JSON, SARIF v2.1.0 (CI/CD).
@@ -42,10 +43,8 @@ import re
 import sys
 from pathlib import Path
 
-__version__ = "1.0.0"
-
-# Default to current working directory when used as standalone package
 AEGIS_ROOT = Path.cwd()
+__version__ = "1.1.0"
 
 # ═══ Risk Definitions ═══
 
@@ -72,6 +71,7 @@ OWASP_MAPPING = {
     "symlink-risk": {"id": "MCP-05", "name": "Symlink Bypass / Path Traversal", "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/"},
     "shadow-server": {"id": "MCP-05", "name": "Shadow MCP Server / Unauthorized Exposure", "url": "https://owasp.org/www-project-mcp-top-10/"},
     "code-execution": {"id": "MCP-01", "name": "Code Execution via eval/exec", "url": "https://owasp.org/www-project-mcp-top-10/"},
+    "known-malicious": {"id": "MCP-07", "name": "Confirmed Malicious Package", "url": "https://owasp.org/www-project-mcp-top-10/"},
     "clean": {"id": None, "name": "No Issues", "url": None},
     "disabled": {"id": None, "name": "Server Disabled", "url": None},
 }
@@ -144,6 +144,16 @@ KNOWN_MCP_PACKAGES = [
     "mcp-vegalite-server",
     "github-kanban-mcp",
     "godot-mcp",
+    "fermat-mcp",
+    "@anthropic/mcp-inspector",
+    "mcp-inspector",
+]
+
+# ═══ Known Malicious Packages (Do Not Use) ═══
+# Confirmed malicious packages — immediately flag if found in configs
+KNOWN_MALICIOUS = [
+    "postmark-mcp",                     # First malicious MCP server on npm
+    "@lanyer640/mcp-runcommand-server",  # Reverse shell, same C2 as PyPI variants
 ]
 
 # ═══ Known Vulnerable Packages (CVE Database) ═══
@@ -193,6 +203,21 @@ KNOWN_VULNERABLE = {
         "cve": "CVE-2026-25546",
         "description": "Command injection via exec() with unsanitized projectPath",
         "fix": "Do not use — input sanitization missing entirely",
+    },
+    "fermat-mcp": {
+        "cve": "CVE-2026-2008",
+        "description": "Critical RCE via eval() on user-supplied equation strings — part of eval() epidemic",
+        "fix": "Do not use — eval() on user input is fundamentally unsafe",
+    },
+    "@anthropic/mcp-inspector": {
+        "cve": "CVE-2026-23744",
+        "description": "Critical RCE via unauthenticated HTTP — listens 0.0.0.0 by default with no auth (CVSS 9.8)",
+        "fix": "Update to >= 1.4.3, bind to localhost only, add authentication",
+    },
+    "mcp-inspector": {
+        "cve": "CVE-2026-23744",
+        "description": "Critical RCE via unauthenticated HTTP — inspector listens 0.0.0.0 with no auth (CVSS 9.8)",
+        "fix": "Update to >= 1.4.3, bind to localhost only",
     },
 }
 
@@ -535,6 +560,20 @@ def scan_mcp_config(mcp_path: Path) -> list:
                     "fix": "Never use eval/exec in MCP servers. Use parameterized APIs instead.",
                 })
                 break  # One finding per server is enough
+
+        # Check 17: Known malicious packages (OWASP MCP-07)
+        # Confirmed malicious MCP servers — immediate CRITICAL alert
+        for arg in args:
+            arg_str = str(arg)
+            for malicious_pkg in KNOWN_MALICIOUS:
+                if malicious_pkg in arg_str:
+                    findings.append({
+                        "server": name,
+                        "risk": "CRITICAL",
+                        "category": "known-malicious",
+                        "message": f"CONFIRMED MALICIOUS PACKAGE: {malicious_pkg} — contains reverse shell/malware payload",
+                        "fix": "Remove immediately. This package is confirmed malware. Report to npm/PyPI.",
+                    })
 
         # Mark clean servers
         server_findings = [f for f in findings if f["server"] == name]
