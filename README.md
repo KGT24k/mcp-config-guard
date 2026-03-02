@@ -2,12 +2,12 @@
 
 **Zero-dependency security linter for MCP configurations.**
 
-Scans your `.mcp.json` for 20 types of security vulnerabilities before any MCP server starts. No API keys. No cloud. No LLM required.
+Scans your `.mcp.json` for 54 types of security vulnerabilities before any MCP server starts. No API keys. No cloud. No LLM required.
 
-[![PyPI version](https://badge.fury.io/py/config-guard.svg)](https://pypi.org/project/config-guard/)
+[![PyPI version](https://badge.fury.io/py/mcp-config-guard.svg)](https://pypi.org/project/mcp-config-guard/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Zero Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](https://pypi.org/project/config-guard/)
+[![Zero Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](https://pypi.org/project/mcp-config-guard/)
 
 ## Why?
 
@@ -25,8 +25,10 @@ Config Guard catches what humans miss:
 ## Install
 
 ```bash
-pip install config-guard
+pip install mcp-config-guard
 ```
+
+> **Note:** The package was renamed to `mcp-config-guard` on PyPI. Both `config-guard` and `mcp-config-guard` CLI commands work after installation.
 
 ## Quick Start
 
@@ -47,9 +49,9 @@ config-guard --sarif > results.sarif
 config-guard --json
 ```
 
-## 20 Security Checks
+## 54 Security Checks
 
-Every check is mapped to the [OWASP MCP Top 10](https://owasp.org/www-project-mcp-top-10/). See [docs/OWASP-MAPPING.md](docs/OWASP-MAPPING.md) for full CWE mappings.
+Every check is mapped to the [OWASP MCP Top 10](https://owasp.org/www-project-mcp-top-10/) and [OWASP Agentic Security Top 10](https://owasp.org/www-project-agentic-security/). See [docs/OWASP-MAPPING.md](docs/OWASP-MAPPING.md) for full CWE mappings.
 
 | # | Check | Risk | OWASP |
 |---|-------|------|-------|
@@ -127,7 +129,7 @@ config-guard --json | jq '.score'
 ```yaml
 - name: MCP Config Security Scan
   run: |
-    pip install config-guard
+    pip install mcp-config-guard
     config-guard --sarif > results.sarif
 
 - name: Upload SARIF
@@ -177,7 +179,7 @@ Exit code is `1` if any CRITICAL or HIGH findings exist (useful for CI gates).
 | **SARIF output** | Native SARIF v2.1.0 with CWE tags + fingerprints | Not available |
 | **CI/CD** | GitHub Actions, any SARIF tool | Background mode (MDM/CrowdStrike) |
 | **Speed** | <100ms (no network) | Seconds (API round-trip) |
-| **Install** | `pip install config-guard` | `uvx mcp-scan@latest` |
+| **Install** | `pip install mcp-config-guard` | `uvx mcp-scan@latest` |
 | **Scope** | Config files only (pre-start) | Config + runtime tool descriptions |
 | **License** | MIT (open source) | Proprietary (Snyk) |
 
