@@ -2,7 +2,7 @@
 
 **Zero-dependency security linter for MCP configurations.**
 
-Scans your `.mcp.json` for 16 types of security vulnerabilities before any MCP server starts. No API keys. No cloud. No LLM required.
+Scans your `.mcp.json` for 20 types of security vulnerabilities before any MCP server starts. No API keys. No cloud. No LLM required.
 
 [![PyPI version](https://badge.fury.io/py/config-guard.svg)](https://pypi.org/project/config-guard/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
@@ -16,7 +16,8 @@ Scans your `.mcp.json` for 16 types of security vulnerabilities before any MCP s
 Config Guard catches what humans miss:
 
 - Typosquatted packages that look like real ones
-- Servers with known CVEs (9 packages tracked)
+- Servers with known CVEs (22 CVEs across 20 packages)
+- 44 confirmed malicious packages (JFrog, Kaspersky, Lazarus APT, SANDWORM_MODE)
 - Secret leakage in environment variables
 - Rug-pull vectors (`npx @latest` auto-updates)
 - Shadow servers exposing via tunnels
@@ -46,9 +47,9 @@ config-guard --sarif > results.sarif
 config-guard --json
 ```
 
-## 17 Security Checks
+## 20 Security Checks
 
-Every check is mapped to the [OWASP MCP Top 10](https://owasp.org/www-project-mcp-top-10/).
+Every check is mapped to the [OWASP MCP Top 10](https://owasp.org/www-project-mcp-top-10/). See [docs/OWASP-MAPPING.md](docs/OWASP-MAPPING.md) for full CWE mappings.
 
 | # | Check | Risk | OWASP |
 |---|-------|------|-------|
@@ -64,11 +65,14 @@ Every check is mapped to the [OWASP MCP Top 10](https://owasp.org/www-project-mc
 | 10 | Overbroad filesystem access (`/`, `C:\`) | MEDIUM | MCP-06 |
 | 11 | Environment variable leaks (hardcoded secrets) | MEDIUM | MCP-04 |
 | 12 | Excessive server count (attack surface) | LOW | MCP-10 |
-| 13 | Known CVEs (12 vulnerable packages tracked) | CRITICAL | MCP-09 |
+| 13 | Known CVEs (22 CVEs across 20 packages) | CRITICAL | MCP-09 |
 | 14 | Symlink bypass (CVE-2025-53109) | HIGH | MCP-05 |
 | 15 | Shadow servers (ngrok, cloudflared, `0.0.0.0`) | HIGH | MCP-05 |
 | 16 | Code execution (`eval`/`exec` patterns) | CRITICAL | MCP-01 |
-| 17 | Known malicious packages (confirmed malware) | CRITICAL | MCP-07 |
+| 17 | Known malicious packages (44 confirmed malware) | CRITICAL | MCP-07 |
+| 18 | Deprecated SSE transport (no per-request auth) | MEDIUM | MCP-03 |
+| 19 | Shell servers (raw shell as MCP server) | CRITICAL | MCP-01 |
+| 20 | Unpinned packages (npx/uvx without version) | MEDIUM | MCP-04 |
 
 ## CVE Database
 
@@ -157,6 +161,31 @@ Config Guard calculates a security score from 0-100:
 **100/100** = no findings. **0/100** = critical issues found.
 
 Exit code is `1` if any CRITICAL or HIGH findings exist (useful for CI gates).
+
+## Comparison: Config Guard vs Agent Scan (Snyk)
+
+| Feature | Config Guard | Agent Scan (Snyk/Invariant Labs) |
+|---------|-------------|--------------------------------|
+| **Approach** | Deterministic regex + CVE database | LLM-based judges + deterministic rules |
+| **Dependencies** | Zero (stdlib only) | Requires API calls to invariantlabs.ai |
+| **Offline** | Fully offline | Requires internet (sends tool descriptions to cloud) |
+| **Privacy** | No data leaves your machine | Tool names/descriptions sent to Snyk for analysis |
+| **Checks** | 20 static config checks | Prompt injection + tool poisoning + toxic flows |
+| **CVE database** | 22 CVEs across 20 packages | Dynamic (cloud-updated) |
+| **Malicious packages** | 44 confirmed (JFrog, Kaspersky, Lazarus, SANDWORM) | Dynamic detection |
+| **OWASP mapping** | All 20 checks mapped to MCP Top 10 + CWE IDs | Not documented |
+| **SARIF output** | Native SARIF v2.1.0 with CWE tags + fingerprints | Not available |
+| **CI/CD** | GitHub Actions, any SARIF tool | Background mode (MDM/CrowdStrike) |
+| **Speed** | <100ms (no network) | Seconds (API round-trip) |
+| **Install** | `pip install config-guard` | `uvx mcp-scan@latest` |
+| **Scope** | Config files only (pre-start) | Config + runtime tool descriptions |
+| **License** | MIT (open source) | Proprietary (Snyk) |
+
+**When to use Config Guard:** CI/CD pipelines, air-gapped environments, privacy-sensitive setups, pre-commit hooks. Config Guard runs instantly with zero network access.
+
+**When to use Agent Scan:** Runtime tool description analysis, prompt injection detection in live MCP servers, enterprise environments with Snyk Evo integration.
+
+**Best practice:** Use both. Config Guard catches config-level issues before servers start. Agent Scan catches runtime tool poisoning after servers are running.
 
 ## Zero Dependencies
 

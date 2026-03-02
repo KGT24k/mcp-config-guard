@@ -1,0 +1,10 @@
+- id: config-guard
+  name: Config Guard — MCP Security Linter
+  description: Zero-dependency security linter for MCP (Model Context Protocol) configurations
+  entry: config-guard
+  language: python
+  files: '(\.mcp\.json|mcp\.json|claude_desktop_config\.json|mcp_config\.json)$'
+  types: [json]
+  args: ['--format', 'text', '--exit-code']
+  stages: [pre-commit]
+  minimum_pre_commit_version: '2.9.0'

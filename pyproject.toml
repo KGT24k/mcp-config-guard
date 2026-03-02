@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "config-guard"
-version = "1.1.0"
+version = "2.0.0"
 description = "Zero-dependency security linter for MCP (Model Context Protocol) configurations"
 readme = "README.md"
 license = {text = "MIT"}
