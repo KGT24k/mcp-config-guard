@@ -52,7 +52,7 @@ jobs:
           import ast, sys
           source = open('src/config_guard/__init__.py').read()
           tree = ast.parse(source)
-          stdlib = {'json','os','re','sys','pathlib','argparse','importlib','collections','typing','abc','functools','itertools','math','string','textwrap','hashlib'}
+          stdlib = {'__future__','json','os','re','sys','pathlib','argparse','importlib','collections','typing','abc','functools','itertools','math','string','textwrap','hashlib'}
           for node in ast.walk(tree):
               if isinstance(node, ast.Import):
                   for alias in node.names:

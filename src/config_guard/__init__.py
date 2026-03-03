@@ -626,7 +626,7 @@ def _levenshtein_distance(s1: str, s2: str) -> int:
     return prev_row[-1]
 
 
-def check_typosquat(package_name: str) -> str | None:
+def check_typosquat(package_name: str) -> "str | None":
     """Check if a package name looks like a typosquat of a known package."""
     clean_name = package_name.split("@")[0] if "@" in package_name and not package_name.startswith("@") else package_name
     # Strip version from scoped packages
