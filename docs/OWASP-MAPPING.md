@@ -1,6 +1,6 @@
 # OWASP MCP Top 10 Mapping
 
-**Config Guard v1.2.0** — 20 checks mapped to OWASP MCP Top 10
+**Config Guard v2.0.0** — 54 checks mapped to OWASP MCP Top 10
 
 This document maps every Config Guard security check to its corresponding OWASP MCP Top 10 category and CWE identifier. Use this as a reference for understanding what threats Config Guard detects, where coverage is strong, and where complementary runtime protections are needed.
 
@@ -163,7 +163,7 @@ General configuration weaknesses that increase attack surface without falling ne
 
 ## Complete Check Reference
 
-The table below lists all 20 Config Guard checks with their OWASP MCP Top 10 mapping, CWE identifier, and a brief description.
+The table below lists the core 20 Config Guard checks with their OWASP MCP Top 10 mapping, CWE identifier, and a brief description. v2.0.0 adds 34 additional checks across all categories — see the source code for the complete list.
 
 | # | Check ID | OWASP Category | CWE | Description |
 |---|---|---|---|---|
@@ -179,11 +179,11 @@ The table below lists all 20 Config Guard checks with their OWASP MCP Top 10 map
 | 10 | `overbroad-access` | MCP-06 | CWE-732 | Root or home directory as working directory |
 | 11 | `env-var-leak` | MCP-04 | CWE-798 | Hardcoded secrets in environment variables |
 | 12 | `excessive-servers` | MCP-10 | CWE-1059 | High server count increasing attack surface |
-| 13 | `known-vulnerable` | MCP-09 | CWE-1395 | 22 CVEs across 20 MCP packages |
+| 13 | `known-vulnerable` | MCP-09 | CWE-1395 | 28 CVEs across MCP packages |
 | 14 | `symlink-risk` | MCP-05 | CWE-59 | Symlink-based file access bypass (CVE-2025-53109) |
 | 15 | `shadow-server` | MCP-05 | CWE-284 | Tunnel/binding network exposure |
 | 16 | `code-execution` | MCP-01 | CWE-95 | `eval()` / `exec()` dynamic code execution |
-| 17 | `known-malicious` | MCP-07 | CWE-506 | 44 confirmed malicious MCP packages |
+| 17 | `known-malicious` | MCP-07 | CWE-506 | 56 confirmed malicious MCP packages |
 | 18 | `deprecated-transport` | MCP-03 | CWE-477 | SSE transport without per-request auth |
 | 19 | `shell-server` | MCP-01 | CWE-78 | Raw shell process as MCP server |
 | 20 | `unpinned-package` | MCP-04 | CWE-1104 | Unpinned versions risking supply chain drift |
@@ -204,7 +204,7 @@ MCP-08  Missing Authentication  [#  ] 1 check    FULL
 MCP-09  Known Vulnerable        [#  ] 1 check    FULL
 MCP-10  Misconfiguration        [#  ] 1 check    PARTIAL
 
-Total: 20 checks across 9 of 10 OWASP MCP Top 10 categories
+Total: 54 checks across 9 of 10 OWASP MCP Top 10 categories
 ```
 
 **9/10 categories covered** through static configuration analysis. MCP-02 (Tool Poisoning) requires runtime protections outside the scope of config-file scanning.

@@ -10,7 +10,7 @@ readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.9"
 authors = [
-    {name = "Kaleb Teeter", email = "kteeter0405@gmail.com"},
+    {name = "AEGIS Forge Team", email = "team@aegisforge.dev"},
 ]
 keywords = [
     "mcp", "security", "linter", "model-context-protocol",
@@ -35,13 +35,16 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/KGT24k/config-guard"
-Repository = "https://github.com/KGT24k/config-guard"
-Issues = "https://github.com/KGT24k/config-guard/issues"
+Homepage = "https://github.com/KGT24k/mcp-config-guard"
+Repository = "https://github.com/KGT24k/mcp-config-guard"
+Issues = "https://github.com/KGT24k/mcp-config-guard/issues"
 
 [project.scripts]
 config-guard = "config_guard:main"
 mcp-config-guard = "config_guard:main"
+
+[tool.hatch.build.targets.sdist]
+exclude = [".github/"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/config_guard"]

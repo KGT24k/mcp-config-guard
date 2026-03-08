@@ -2,6 +2,29 @@
 
 All notable changes to Config Guard will be documented in this file.
 
+## [2.0.0] - 2026-03-04
+
+### Added
+- **32 new security checks** (22 → 54 total) covering expanded threat landscape
+- **CWE tags** on all checks for standards compliance
+- **SARIF v2.1.0 enhancements** — richer rule metadata, help URIs, CWE references
+- **Pre-commit hook integration** — `.pre-commit-hooks.yaml` for automated config scanning
+- **Expanded CVE database** — 28 CVEs across MCP packages
+- **Expanded malicious package database** — 56 confirmed malicious MCP packages
+- **New check categories:** deprecated API patterns, insecure defaults, privilege escalation paths
+- **`--sarif` output improvements** — full rule help text, markdown descriptions
+
+### Changed
+- Package renamed from `config-guard` to `mcp-config-guard` on PyPI
+- Repository URLs updated to `github.com/KGT24k/mcp-config-guard`
+- Author updated to "AEGIS Forge Team"
+- Minimum Python version remains 3.9+
+- All check IDs now include CWE mapping
+
+### Fixed
+- Python 3.9 compatibility — replaced `str | None` type hints with string annotations
+- CI matrix covers Python 3.9-3.13 (3.14 classified but not yet in CI)
+
 ## [1.4.0] - 2026-03-01
 
 ### Added
